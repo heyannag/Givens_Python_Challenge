@@ -1,50 +1,45 @@
-# First we'll import the os module
-# This will allow us to create file paths across operating systems
 import os
-# Module for reading CSV files
 import csv
 
-# Create path to open CSV file
-csvpath = os.path.join('Resources', 'election_data.csv')
-with open(csvpath) as csvfile:
-    # CSV reader specifies delimiter and variable that holds contents
-    csvreader = csv.reader(csvfile, delimiter=',')
-    print(csvreader)
+file = os.path.join("Resources","election_data.csv")
 
-    # Read the header row first 
-    csv_header = next(csvreader)
-    data = []
+total_votes = 0
 
-    # Read each row of data after the header
+#setting candidate and number of volutes as key and values in dictionary
+vote_counter = {}
+
+#reading csv file
+with open(file) as data:
+    csvreader = csv.reader(data,delimiter = ",")
+    header = next(csvreader)
+    # Loop through all candidate names and add a new name each time one appears
     for row in csvreader:
-        data.append(row)
-       
-def vote_count(data):
-    candidates = {}
-    total_votes = 0 
-    for row in data[0:10]:
         candidate = row[2]
-        if candidate in candidates:
-            candidates[candidate] += 1
+        if candidate in vote_counter.keys():
+            vote_counter[candidate] += 1
         else:
-            candidates[candidate] = 1
-    return(vote_count)
-        
-def vote_perecents(candidates, total_votes):
-    percents = {}
-    for candidate, votes in candidates.items():
-        percents[candidate] = (votes/total_votes) * 100
-    return percents
+            vote_counter[candidate] = 1
+    
+        total_votes += 1
 
-def print_results(candidates, percents):
-    winning_votes = 0
-    winner = ""
-    for candidate, votes in candidate.items():
-        if votes > winning_votes:
-            winner = candidate
-            winning_votes = votes
+#print(vote_counter)    
+winner = max(vote_counter, key = vote_counter.get)
 
-# vote_csv = csvpath('Resources', 'election_data.csv')
-# candidates, total_votes = vote_count(vote_csv)
-# percents = vote_perecents(candidates, total_votes)
-# print(percents)
+Results = f"""
+Election Reults
+-------------------------
+Total Votes: {total_votes}
+-------------------------"""
+
+for k, v in vote_counter.items():
+    percentage = v / total_votes
+    Results += k + ': ' + '{:.3%}'.format(percentage) + ', (' + str(v) +')\n'
+
+Results += f"""-------------------------
+Winner: {winner}
+-------------------------"""
+print(Results)
+
+output_file = "output_file.txt"
+with open(output_file, "w") as doc:
+    doc.write(Results)
